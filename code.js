@@ -1,9 +1,9 @@
 "use strict";
 const Gameboard = (function () {
-    let gameArray = [' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ];
+    let gameArray = ['' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ];
 
     function add(position, symbol) {
-        if (gameArray[position] != ' ' ) {
+        if (gameArray[position] != '' ) {
             return 1;
         } else {
             gameArray[position] = symbol;
@@ -15,7 +15,7 @@ const Gameboard = (function () {
     }
 
     function resetBoard() {
-        gameArray = [' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ,' ' ];
+        gameArray = ['' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ];
     }
 
     return {add, getGameArray, resetBoard};
