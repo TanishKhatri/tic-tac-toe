@@ -91,7 +91,7 @@ const gameLogic = (function (gameArray) {
          
         let currentMarker = chooseFirstMarker();
         while(true) {
-            displayBoard(gameArray);
+            displayController.updateDisplay(gameArray);
             if (declareTheWin() === "O") {
                 console.log("O won");
                 Gameboard.resetBoard();
@@ -109,6 +109,7 @@ const gameLogic = (function (gameArray) {
             let chosenPosition = parseInt(prompt(`Choose your position your marker is ${currentMarker}`));
             if (Number.isNaN(chosenPosition)) {
                 console.log("Bad Position Argument");
+                Gameboard.resetBoard();
                 break;
             }
 
@@ -139,3 +140,21 @@ function playerFactory(name) {
 
     return {playerName, playerMarker};
 }
+
+const displayController = (function() {
+    function updateDisplay(gameArray) {
+        for(let i = 0; i < 9; i++) {
+            if (gameArray[i] === "O") {
+                const box = document.querySelector(`[data-index="${i}"]`);
+                const circle = document.querySelector(".O-Marker").content.cloneNode(true);
+                box.appendChild(circle);
+            } else if (gameArray[i] === "X") {
+                const box = document.querySelector(`[data-index="${i}"]`);
+                const cross = document.querySelector(".X-Marker").content.cloneNode(true);
+                box.appendChild(cross);
+            }
+        }
+    }
+
+    return {updateDisplay};
+})();
