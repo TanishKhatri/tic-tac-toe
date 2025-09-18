@@ -1,0 +1,59 @@
+:root {
+    --boardSize: 80px;
+    --p1-color: rgb(255, 60, 60);
+    --p2-color: rgb(20, 209, 223);
+    --cross-color: var(--p1-color);
+    --circle-color: var(--p2-color);
+}
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+body {
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    margin: 0px;
+}
+
+.playerNames {
+    display: flex;
+    gap: 25px;
+}
+
+.player {
+    border-radius: 9999px;
+    border: 2px rgb(0, 167, 130) solid;
+    padding: 10px 25px;
+    font-size: 1.2rem;
+}
+
+.gameBoard {
+    margin-top: 12px;
+    display: grid;
+    grid-template: repeat(3, var(--boardSize)) / repeat(3, var(--boardSize));
+}
+
+.boardSquare {
+    background-color: white;
+    border: 1px solid black;
+    outline: none;
+    border-collapse: collapse;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cross path{
+    fill: var(--cross-color);
+}
+
+.circle path {
+    fill: var(--circle-color);
+}
