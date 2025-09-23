@@ -2,7 +2,7 @@
 const Gameboard = (function () {
     let gameArray = ['' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ];
 
-    function add(position, marker) {
+    function addMarker(position, marker) {
         if (gameArray[position] !== '' ) {
             return 1;
         } else {
@@ -14,16 +14,96 @@ const Gameboard = (function () {
         return gameArray;
     }
 
+
     function resetBoard() {
         gameArray = ['' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ];
     }
 
-    return {add, getGameArray, resetBoard};
+    //set and get players
+    let playerList = [];
+    function setPlayers(player1, player2) {
+        playerList.push(player1);
+        playerList.push(player2);
+    }
+    function getPlayerList() {
+        return playerList;
+    }
+
+    // For use in display controller: 
+    // startScreen, inGame, endScreen
+    let gameScreenStatus = "startScreen";
+    function setGameScreenStatus(status) {
+        if (status === "startScreen") {
+            gameStatus = "startScreen";
+        } else if (status === "inGame") {
+            gameStatus = "inGame";
+        } else if (status === "endScreen") {
+            gameStatus = "endScreen";
+        } else {
+            throw Error("gameStatus is being set incorrectly");
+        }
+    }
+    function getGameScreenStatus() {
+        return gameScreenStatus;
+    }
+
+    //For DOM to check for illegal Moves
+    let illegalMoveStatus = false;
+    function toggleIllegalMoveStatus() {
+        illegalMoveStatus  = !illegalMoveStatus;
+    }
+    function getIllegalMoveStatus() {
+        return illegalMoveStatus;
+    }
+
+
+    //Used for win Screens
+    // O if O won, X if X won, draw when drawed and winNotDeclared if no one has won yet.
+    let winStatus = "winNotDeclared";
+    function setWinStatus(status) {
+        if (status === "O") {
+            winStatus = "O"
+        } else if (status === "X") {
+            winStatus = "X";
+        } else if (status === "draw") {
+            winStatus = "draw";
+        } else if (status === "winNotDeclared") {
+            winStatus = "winNotDeclared";
+        } else {
+            throw Error("Incorrect argument in setWinStatus");
+        }
+    }
+    function getWinStatus() {
+        return winStatus;
+    }
+
+    let currentPlayer;
+    function setCurrentPlayer(player) {
+        currentPlayer = player;
+    }  
+    function getCurrentPlayer() {
+        return getCurrentPlayer;
+    }
+
+    return {
+            addMarker,
+            getGameArray,
+            resetBoard,
+            setPlayers,
+            getPlayerList,
+            setGameScreenStatus,
+            getGameScreenStatus,
+            setWinStatus,
+            getWinStatus,
+            setCurrentPlayer,
+            getCurrentPlayer
+        };
 })();
 
-const gameLogic = (function (gameArray) {
+const gameLogic = (function () {
     function declareTheWin() {
         // Returns "X" if X wins and "O" if O wins, returns '' if no winner found.
+        let gameArray = Gameboard.getGameArray();
         function checkWinner() {
             const winArray = [
                 [0,1,2],
@@ -64,7 +144,7 @@ const gameLogic = (function (gameArray) {
         if (winner === '') {
             const tie = checkTie();
             if (tie) {
-                return 'tie';
+                return 'draw';
             } else {
                 return 'continueGame';
             }
@@ -72,67 +152,10 @@ const gameLogic = (function (gameArray) {
         return winner;
     }
 
-    function playGame() {
-        function chooseFirstMarker() {
-            let randomBinary = Math.floor(Math.random * 2);
-            if (randomBinary === 0) {
-                return "X";
-            } else {
-                return "O";
-            }
-        }
-        
-        function makeTurn(position, marker) {
-            if (Gameboard.add(position, marker) === 1) {
-                console.log("Incorrect Position: Try Again");
-                return "illegalMove";
-            }
-        }
-         
-        let currentMarker = chooseFirstMarker();
-        while(true) {
-            displayController.updateDisplay(gameArray);
-            if (declareTheWin() === "O") {
-                console.log("O won");
-                Gameboard.resetBoard();
-                break;
-            } else if (declareTheWin() === "X") {
-                console.log("X won");
-                Gameboard.resetBoard();
-                break;
-            } else if (declareTheWin() === "tie") {
-                console.log("Tie!");
-                Gameboard.resetBoard();
-                break;
-            }
-            
-            let chosenPosition = parseInt(prompt(`Choose your position your marker is ${currentMarker}`));
-            if (Number.isNaN(chosenPosition)) {
-                console.log("Bad Position Argument");
-                Gameboard.resetBoard();
-                break;
-            }
+    function playTurn() {
 
-            if (makeTurn(chosenPosition, currentMarker) === "illegalMove") {
-                continue;
-            }
-
-            if (currentMarker === "X") {
-                currentMarker = "O";
-            } else {
-                currentMarker = "X";
-            }
-        }
     }
-
-    return {playGame};
-})(Gameboard.getGameArray());
-
-function displayBoard(gameArray) {
-    for (let i = 0; i < 9; i += 3) {
-        console.log(`${gameArray[i]} | ${gameArray[i+1]} | ${gameArray[i+2]}\n`);
-    }
-}
+})();
 
 function playerFactory(name) {
     let playerName = name;
@@ -146,15 +169,41 @@ const displayController = (function() {
         for(let i = 0; i < 9; i++) {
             if (gameArray[i] === "O") {
                 const box = document.querySelector(`[data-index="${i}"]`);
+                box.innerHTML = "";
                 const circle = document.querySelector(".O-Marker").content.cloneNode(true);
                 box.appendChild(circle);
             } else if (gameArray[i] === "X") {
                 const box = document.querySelector(`[data-index="${i}"]`);
+                box.innerHTML = "";
                 const cross = document.querySelector(".X-Marker").content.cloneNode(true);
                 box.appendChild(cross);
             }
         }
     }
+
+    let allowButtonsToBeClicked = false;
+    let userHasClicked = false;
+    let chosenPosition;
+    function addButtonEventListeners() {
+        const boxList = document.querySelectorAll(".boardSquare");
+        boxList.forEach((box) => {
+            box.addEventListener("click", () => {
+                if (allowButtonsToBeClicked) {
+                    chosenPostion = parseInt(box.dataset.index);
+                    allowButtonsToBeClicked = false;
+                    userHasClicked = true;
+                }   
+            });
+        });
+    }
+
+    addButtonEventListeners();
+
+    function getUserChosenPosition() {
+        allowButtonsToBeClicked = true;
+
+    }
+
 
     return {updateDisplay};
 })();
