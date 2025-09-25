@@ -262,11 +262,19 @@ const displayController = (function() {
             const startScreenTemp = document.querySelector(".startScreenTemp");
             const startScreen =  startScreenTemp.content.cloneNode(true);
             document.body.appendChild(startScreen);
+        } else if (gameScreen === "inGame") {
+            const startScreen = document.querySelector(".startScreen");
+            document.body.remove(startScreen);
+            const inGameScreenTemp = document.querySelector(".inGame")
         }
-        //updateBoard();
     }
 
     function addGameEventListeners() {
+        let startButton = document.querySelector(".start");
+        startButton.addEventListener("click", () => {
+            gameLogic.startGame();
+        });
+
         let buttonList = document.querySelectorAll(".boardSquare");
         buttonList.forEach((button) => {
             button.addEventListener("click", () => {
