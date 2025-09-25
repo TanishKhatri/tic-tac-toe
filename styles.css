@@ -82,7 +82,7 @@ body {
     font-size: 2.9rem;
 }
 
-.gameDiv {
+.inGame {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -122,9 +122,9 @@ body {
 }
 
 .cross path{
-    fill: var(--cross-color);
+    fill: var(--primary-blue)
 }
 
 .circle path {
-    fill: var(--circle-color);
+    fill: var(--primary-red)
 }

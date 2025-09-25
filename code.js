@@ -192,19 +192,24 @@ const gameLogic = (function () {
             Gameboard.toggleIllegalMoveStatus();
             displayController.updateDisplay();
             return;
+        } else {
+            if(Gameboard.getIllegalMoveStatus()) {
+                Gameboard.toggleIllegalMoveStatus();
+            }
         }
 
         let winDeclaration = declareTheWin();
         if (winDeclaration === "O") {
             Gameboard.setWinStatus("O");
-            Gameboard.setGameScreenStatus("endScreen");
             console.log("O Won");
             displayController.updateDisplay();
+            Gameboard.setGameScreenStatus("endScreen");
             return;
         } else if (winDeclaration === "X") {
             Gameboard.setWinStatus("X");
-            Gameboard.setGameScreenStatus("endScreen");
             console.log("X Won");
+            displayController.updateDisplay();
+            setTimeout(Gameboard.setGameScreenStatus("endScreen"),1500);
             displayController.updateDisplay();
             return;
         } else if (winDeclaration === "draw") {
@@ -261,30 +266,35 @@ const displayController = (function() {
         if (gameScreen === "startScreen") {
             const startScreenTemp = document.querySelector(".startScreenTemp");
             const startScreen =  startScreenTemp.content.cloneNode(true);
+
+            let startButton = startScreen.querySelector(".start");
+            startButton.addEventListener("click", () => {
+                gameLogic.startGame();
+            });
+
             document.body.appendChild(startScreen);
         } else if (gameScreen === "inGame") {
             const startScreen = document.querySelector(".startScreen");
-            document.body.remove(startScreen);
-            const inGameScreenTemp = document.querySelector(".inGame")
+            if (startScreen !== null) {
+                startScreen.remove();
+            }
+
+            if (!document.querySelector(".inGame")) {
+                const inGameScreenTemp = document.querySelector(".inGameTemp");
+                const inGame = inGameScreenTemp.content.cloneNode(true);
+                let buttonList = inGame.querySelectorAll(".boardSquare");
+                buttonList.forEach((button) => {
+                    button.addEventListener("click", () => {
+                        let index = button.dataset.index;
+                        gameLogic.playTurn(index);
+                    })
+                })
+                document.body.appendChild(inGame);
+            } else {
+                updateBoard();
+            }
         }
     }
-
-    function addGameEventListeners() {
-        let startButton = document.querySelector(".start");
-        startButton.addEventListener("click", () => {
-            gameLogic.startGame();
-        });
-
-        let buttonList = document.querySelectorAll(".boardSquare");
-        buttonList.forEach((button) => {
-            button.addEventListener("click", () => {
-                let index = button.dataset.index;
-                gameLogic.playTurn(index);
-            })
-        })
-    }
-
-    addGameEventListeners();
 
     return {updateDisplay};
 })();
