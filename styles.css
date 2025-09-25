@@ -1,5 +1,5 @@
 :root {
-    --boardSize: 80px;
+    --boardSize: 100px;
     --primary-blue: #134686;
     --primary-red: #ED3F27;
     --primary-yellow: #FEB21A;
@@ -42,11 +42,11 @@ body {
     text-align: center;
 }
 
-.X-inputPlayer {
+.startScreen .X-inputPlayer {
     border: 2px solid var(--primary-blue);
 }
 
-.O-inputPlayer {
+.startScreen .O-inputPlayer {
     border: 2px solid var(--primary-red);
 }
 
@@ -98,6 +98,18 @@ body {
     border-radius: 9999px;
     padding: 10px 25px;
     font-size: 1.2rem;
+    border: 2px solid black;
+}
+
+.inGame .player {
+    font-size: 1.4rem;
+}
+
+.player.Xplayer.currentPlayer {
+    border: 2px solid var(--primary-blue);
+}
+.player.Oplayer.currentPlayer {
+    border: 2px solid var(--primary-red);
 }
 
 .gameBoard {

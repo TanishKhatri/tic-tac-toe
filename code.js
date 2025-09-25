@@ -161,11 +161,12 @@ const gameLogic = (function () {
         return {playerName, playerMarker};
     }
 
-    function startGame() {
-        let p1 = playerFactory("Player O");
-        let p2 = playerFactory("Player X");
-        p1.playerMarker = "O";
-        p2.playerMarker = "X";
+    function startGame(playerX, playerO) {
+        Gameboard.resetBoard();
+        let p1 = playerFactory(playerX);
+        let p2 = playerFactory(playerO);
+        p1.playerMarker = "X";
+        p2.playerMarker = "O";
         Gameboard.setPlayers(p1, p2);
         
         let playerList = Gameboard.getPlayerList();
@@ -259,6 +260,17 @@ const displayController = (function() {
             let gameBoardNode = document.querySelector(".gameBoard");
             gameBoardNode.classList.remove("illegalMove");
         }
+
+        let currentPlayer = Gameboard.getCurrentPlayer();
+        let playerX = document.querySelector(".inGame .Xplayer");
+        let playerO = document.querySelector(".inGame .Oplayer");
+        if (currentPlayer.playerMarker === "X") {
+            playerO.classList.remove("currentPlayer");
+            playerX.classList.add("currentPlayer");
+        } else if (currentPlayer.playerMarker === "O") {
+            playerX.classList.remove("currentPlayer");
+            playerO.classList.add("currentPlayer");
+        }
     }
 
     function updateDisplay() {
@@ -269,7 +281,9 @@ const displayController = (function() {
 
             let startButton = startScreen.querySelector(".start");
             startButton.addEventListener("click", () => {
-                gameLogic.startGame();
+                let playerX = document.querySelector("#playerX");
+                let playerO = document.querySelector("#playerO");
+                gameLogic.startGame(playerX.value, playerO.value);
             });
 
             document.body.appendChild(startScreen);
@@ -288,7 +302,12 @@ const displayController = (function() {
                         let index = button.dataset.index;
                         gameLogic.playTurn(index);
                     })
-                })
+                });
+                let playerList = Gameboard.getPlayerList();
+                let playerX = inGame.querySelector(".Xplayer");
+                let playerO = inGame.querySelector(".Oplayer");
+                playerX.textContent = playerList[0].playerName;
+                playerO.textContent = playerList[1].playerName;
                 document.body.appendChild(inGame);
             } else {
                 updateBoard();
