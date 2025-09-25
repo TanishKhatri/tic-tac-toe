@@ -2,7 +2,7 @@
     --boardSize: 100px;
     --primary-blue: #134686;
     --primary-red: #ED3F27;
-    --primary-yellow: #FEB21A;
+    --primary-yellow: #e26a07;
     --primary-pale: #FDF4E3; 
     --cross-color: var(--p1-color);
     --circle-color: var(--p2-color);
@@ -103,7 +103,6 @@ body {
     border-radius: 9999px;
     padding: 10px 25px;
     font-size: 1.2rem;
-    border: 2px solid black;
 }
 
 .inGame .player {
@@ -111,10 +110,10 @@ body {
 }
 
 .player.Xplayer.currentPlayer {
-    border: 2px solid var(--primary-blue);
+    outline: 2px solid var(--primary-blue);
 }
 .player.Oplayer.currentPlayer {
-    border: 2px solid var(--primary-red);
+    outline: 2px solid var(--primary-red);
 }
 
 .gameBoard {
@@ -148,7 +147,28 @@ body {
 
 .winnerDeclaration {
     margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+}
+
+.playAgain {
+    margin-top: 12px;
+}
+
+.playerName.O-won {
+    color: var(--primary-red);
+}
+
+.playerName.X-won {
+    color: var(--primary-blue);
+}
+
+.hidden {
+    display: none;
+}
+
+.draw {
+    margin-top: 10px;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
 }

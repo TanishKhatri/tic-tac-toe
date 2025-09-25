@@ -21,12 +21,16 @@ const Gameboard = (function () {
 
     //set and get players
     let playerList = [];
-    function setPlayers(player1, player2) {
-        playerList.push(player1);
-        playerList.push(player2);
+    function setPlayers(playerX, playerO) {
+        playerList.push(playerX);
+        playerList.push(playerO);
     }
     function getPlayerList() {
         return playerList;
+    }
+    function resetPlayers() {
+        playerList.pop();
+        playerList.pop();
     }
 
     // For use in display controller: 
@@ -98,7 +102,8 @@ const Gameboard = (function () {
             setCurrentPlayer,
             getCurrentPlayer,
             toggleIllegalMoveStatus,
-            getIllegalMoveStatus
+            getIllegalMoveStatus,
+            resetPlayers
         };
 })();
 
@@ -202,19 +207,15 @@ const gameLogic = (function () {
         let winDeclaration = declareTheWin();
         if (winDeclaration === "O") {
             Gameboard.setWinStatus("O");
-            console.log("O Won");
-            displayController.updateDisplay();
             Gameboard.setGameScreenStatus("endScreen");
+            displayController.updateDisplay();
             return;
         } else if (winDeclaration === "X") {
             Gameboard.setWinStatus("X");
-            console.log("X Won");
-            displayController.updateDisplay();
-            setTimeout(Gameboard.setGameScreenStatus("endScreen"),1500);
+            Gameboard.setGameScreenStatus("endScreen");
             displayController.updateDisplay();
             return;
         } else if (winDeclaration === "draw") {
-            console.log("Draw");
             Gameboard.setWinStatus("draw");
             Gameboard.setGameScreenStatus("endScreen");
             displayController.updateDisplay();
@@ -278,7 +279,10 @@ const displayController = (function() {
         if (gameScreen === "startScreen") {
             const startScreenTemp = document.querySelector(".startScreenTemp");
             const startScreen =  startScreenTemp.content.cloneNode(true);
-
+            const inGameScreen = document.querySelector(".inGame");
+            if (inGameScreen !== null) {
+                inGameScreen.remove();
+            }
             let startButton = startScreen.querySelector(".start");
             startButton.addEventListener("click", () => {
                 let playerX = document.querySelector("#playerX");
@@ -303,17 +307,68 @@ const displayController = (function() {
                         gameLogic.playTurn(index);
                     })
                 });
+
+                let playAgainButton = inGame.querySelector(".playAgain");
+                playAgainButton.addEventListener("click", () => {
+                    Gameboard.setGameScreenStatus("startScreen");
+                    Gameboard.resetBoard();
+                    Gameboard.setWinStatus("winNotDeclared");
+                    Gameboard.resetPlayers();
+                    if(Gameboard.getIllegalMoveStatus()) {
+                        Gameboard.toggleIllegalMoveStatus();
+                    }
+
+                    let winDeclaration = document.querySelector(".winnerDeclaration");
+                    let winDeclarationSpan = document.querySelector(".winnerDeclaration span");
+                    let drawElement = document.querySelector(".draw");
+                    if (!winDeclaration.classList.contains("hidden")) {
+                        winDeclaration.classList.add("hidden");
+                    }
+                    if (!drawElement.classList.contains("hidden")) {
+                        drawElement.
+                        classList.add("hidden");
+                    }
+                    winDeclarationSpan.textContent = "";
+                    updateDisplay();
+                });
+
                 let playerList = Gameboard.getPlayerList();
                 let playerX = inGame.querySelector(".Xplayer");
                 let playerO = inGame.querySelector(".Oplayer");
                 playerX.textContent = playerList[0].playerName;
                 playerO.textContent = playerList[1].playerName;
+                let currentPlayer = Gameboard.getCurrentPlayer();
+                if (currentPlayer.playerMarker === "X") {
+                    playerO.classList.remove("currentPlayer");
+                    playerX.classList.add("currentPlayer");
+                } else if (currentPlayer.playerMarker === "O") {
+                    playerX.classList.remove("currentPlayer");
+                    playerO.classList.add("currentPlayer");
+                }
                 document.body.appendChild(inGame);
             } else {
                 updateBoard();
             }
         } else if (gameScreen === "endScreen") {
-            
+            updateBoard();
+            let winDeclaration = document.querySelector(".winnerDeclaration");
+            let winDeclarationSpan = document.querySelector(".winnerDeclaration span");
+            if (Gameboard.getWinStatus() === "O") {
+                let playerList = Gameboard.getPlayerList();
+                let playerO = playerList[1];
+                winDeclarationSpan.textContent = playerO.playerName;
+                winDeclarationSpan.classList.add("O-won");
+                winDeclaration.classList.remove("hidden");
+            } else if (Gameboard.getWinStatus() === "X") {
+                let playerList = Gameboard.getPlayerList();
+                let playerX = playerList[0];
+                winDeclarationSpan.textContent = playerX.playerName;
+                winDeclarationSpan.classList.add("X-won");
+                winDeclaration.classList.remove("hidden");
+            } else if (Gameboard.getWinStatus() === "draw") {
+                let drawElement = document.querySelector(".draw");
+                drawElement.classList.remove("hidden"); 
+            }
         }
     }
 

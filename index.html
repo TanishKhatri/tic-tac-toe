@@ -38,6 +38,8 @@
     </template>
     <template class="inGameTemp">
         <div class="inGame">
+            <div class="winnerDeclaration hidden"><span class="playerName"></span> Won !</div>
+            <div class="draw hidden">Its a draw</div>
             <div class="playerNames">
                 <div class="player Xplayer">Player 1</div>
                 <div class="player Oplayer">Player 2</div>
@@ -70,10 +72,7 @@
                 <button class="boardSquare" data-index="7"></button>
                 <button class="boardSquare" data-index="8"></button>
             </div>
-            <div class="winnerDeclaration">
-                <p class="winner">O won</p>
-                <button class="playAgain">Play Again</button>
-            </div>
+            <button class="playAgain">Play Again</button>
         </div>
     </template>
     <script src="code.js"></script>
