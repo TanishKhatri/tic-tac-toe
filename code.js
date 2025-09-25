@@ -312,6 +312,8 @@ const displayController = (function() {
             } else {
                 updateBoard();
             }
+        } else if (gameScreen === "endScreen") {
+            
         }
     }
 
