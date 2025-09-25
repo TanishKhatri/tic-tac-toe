@@ -38,6 +38,11 @@ body {
     margin-top: 12px;
     display: grid;
     grid-template: repeat(3, var(--boardSize)) / repeat(3, var(--boardSize));
+    border: 1px solid black;
+}
+
+.gameBoard.illegalMove {
+    border: 1px solid red;
 }
 
 .boardSquare {

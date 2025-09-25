@@ -34,11 +34,11 @@ const Gameboard = (function () {
     let gameScreenStatus = "startScreen";
     function setGameScreenStatus(status) {
         if (status === "startScreen") {
-            gameStatus = "startScreen";
+            gameScreenStatus = "startScreen";
         } else if (status === "inGame") {
-            gameStatus = "inGame";
+            gameScreenStatus = "inGame";
         } else if (status === "endScreen") {
-            gameStatus = "endScreen";
+            gameScreenStatus = "endScreen";
         } else {
             throw Error("gameStatus is being set incorrectly");
         }
@@ -82,7 +82,7 @@ const Gameboard = (function () {
         currentPlayer = player;
     }  
     function getCurrentPlayer() {
-        return getCurrentPlayer;
+        return currentPlayer;
     }
 
     return {
@@ -96,7 +96,9 @@ const Gameboard = (function () {
             setWinStatus,
             getWinStatus,
             setCurrentPlayer,
-            getCurrentPlayer
+            getCurrentPlayer,
+            toggleIllegalMoveStatus,
+            getIllegalMoveStatus
         };
 })();
 
@@ -152,58 +154,118 @@ const gameLogic = (function () {
         return winner;
     }
 
-    function playTurn() {
+    function playerFactory(name) {
+        let playerName = name;
+        let playerMarker = "";
 
+        return {playerName, playerMarker};
     }
+
+    function startGame() {
+        let p1 = playerFactory("Player O");
+        let p2 = playerFactory("Player X");
+        p1.playerMarker = "O";
+        p2.playerMarker = "X";
+        Gameboard.setPlayers(p1, p2);
+        
+        let playerList = Gameboard.getPlayerList();
+        let currentPlayer = playerList[Math.floor(Math.random() * 2)];
+        Gameboard.setCurrentPlayer(currentPlayer);
+        Gameboard.setGameScreenStatus("inGame");
+        displayController.updateDisplay();
+    }
+
+    function chooseNextPlayer() {
+        let currentPlayer = Gameboard.getCurrentPlayer();
+        let nextPlayer;
+        for (let i = 0; i < 2; i++) {
+            let playerList = Gameboard.getPlayerList();
+            if (currentPlayer !== playerList[i]) {
+                nextPlayer = playerList[i];
+            }
+        }
+        return nextPlayer;
+    }
+
+    function playTurn(position) {
+        if (Gameboard.addMarker(position, Gameboard.getCurrentPlayer().playerMarker) === 1) {
+            Gameboard.toggleIllegalMoveStatus();
+            displayController.updateDisplay();
+            return;
+        }
+
+        let winDeclaration = declareTheWin();
+        if (winDeclaration === "O") {
+            Gameboard.setWinStatus("O");
+            Gameboard.setGameScreenStatus("endScreen");
+            console.log("O Won");
+            displayController.updateDisplay();
+            return;
+        } else if (winDeclaration === "X") {
+            Gameboard.setWinStatus("X");
+            Gameboard.setGameScreenStatus("endScreen");
+            console.log("X Won");
+            displayController.updateDisplay();
+            return;
+        } else if (winDeclaration === "draw") {
+            console.log("Draw");
+            Gameboard.setWinStatus("draw");
+            Gameboard.setGameScreenStatus("endScreen");
+            displayController.updateDisplay();
+            return;
+        }
+
+        Gameboard.setCurrentPlayer(chooseNextPlayer());
+        displayController.updateDisplay();
+    }
+
+    return {startGame, playTurn};
 })();
 
-function playerFactory(name) {
-    let playerName = name;
-    let playerMarker = "";
-
-    return {playerName, playerMarker};
-}
 
 const displayController = (function() {
-    function updateDisplay(gameArray) {
-        for(let i = 0; i < 9; i++) {
+    function updateDisplay() {
+        let gameArray =  Gameboard.getGameArray();
+        let illegalMoveStatus = Gameboard.getIllegalMoveStatus();
+
+        for (let i = 0; i < gameArray.length; i++) {
             if (gameArray[i] === "O") {
-                const box = document.querySelector(`[data-index="${i}"]`);
-                box.innerHTML = "";
-                const circle = document.querySelector(".O-Marker").content.cloneNode(true);
-                box.appendChild(circle);
+                let box = document.querySelector(`[data-index="${i}"]`);
+                if (box.hasChildNodes()) {
+                    continue;
+                }
+                let marker = document.querySelector(".O-Marker").content.cloneNode(true);
+                box.appendChild(marker);
             } else if (gameArray[i] === "X") {
-                const box = document.querySelector(`[data-index="${i}"]`);
-                box.innerHTML = "";
-                const cross = document.querySelector(".X-Marker").content.cloneNode(true);
-                box.appendChild(cross);
+                let box = document.querySelector(`[data-index="${i}"]`);
+                if (box.hasChildNodes()) {
+                    continue;
+                }
+                let marker = document.querySelector(".X-Marker").content.cloneNode(true);
+                box.appendChild(marker);
             }
+        }
+
+        if (illegalMoveStatus) {
+            let gameBoardNode = document.querySelector(".gameBoard");
+            gameBoardNode.classList.add("illegalMove");
+        } else {
+            let gameBoardNode = document.querySelector(".gameBoard");
+            gameBoardNode.classList.remove("illegalMove");
         }
     }
 
-    let allowButtonsToBeClicked = false;
-    let userHasClicked = false;
-    let chosenPosition;
-    function addButtonEventListeners() {
-        const boxList = document.querySelectorAll(".boardSquare");
-        boxList.forEach((box) => {
-            box.addEventListener("click", () => {
-                if (allowButtonsToBeClicked) {
-                    chosenPostion = parseInt(box.dataset.index);
-                    allowButtonsToBeClicked = false;
-                    userHasClicked = true;
-                }   
-            });
-        });
+    function addGameEventListeners() {
+        let buttonList = document.querySelectorAll(".boardSquare");
+        buttonList.forEach((button) => {
+            button.addEventListener("click", () => {
+                let index = button.dataset.index;
+                gameLogic.playTurn(index);
+            })
+        })
     }
 
-    addButtonEventListeners();
-
-    function getUserChosenPosition() {
-        allowButtonsToBeClicked = true;
-
-    }
-
+    addGameEventListeners();
 
     return {updateDisplay};
 })();
