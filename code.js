@@ -330,6 +330,9 @@ const displayController = (function() {
                     }
                     winDeclarationSpan.textContent = "";
                     updateDisplay();
+
+                    let gameBoard = document.querySelector(".gameBoard");
+                    gameBoard.classList.remove("unclickable");
                 });
 
                 let playerList = Gameboard.getPlayerList();
@@ -369,6 +372,9 @@ const displayController = (function() {
                 let drawElement = document.querySelector(".draw");
                 drawElement.classList.remove("hidden"); 
             }
+
+            let gameBoard = document.querySelector(".gameBoard");
+            gameBoard.classList.add("unclickable");
         }
     }
 
