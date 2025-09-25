@@ -224,7 +224,8 @@ const gameLogic = (function () {
 
 
 const displayController = (function() {
-    function updateDisplay() {
+
+    function updateBoard() {
         let gameArray =  Gameboard.getGameArray();
         let illegalMoveStatus = Gameboard.getIllegalMoveStatus();
 
@@ -255,6 +256,16 @@ const displayController = (function() {
         }
     }
 
+    function updateDisplay() {
+        let gameScreen = Gameboard.getGameScreenStatus();
+        if (gameScreen === "startScreen") {
+            const startScreenTemp = document.querySelector(".startScreenTemp");
+            const startScreen =  startScreenTemp.content.cloneNode(true);
+            document.body.appendChild(startScreen);
+        }
+        //updateBoard();
+    }
+
     function addGameEventListeners() {
         let buttonList = document.querySelectorAll(".boardSquare");
         buttonList.forEach((button) => {
@@ -269,3 +280,5 @@ const displayController = (function() {
 
     return {updateDisplay};
 })();
+
+displayController.updateDisplay();

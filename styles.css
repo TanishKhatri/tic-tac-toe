@@ -1,9 +1,12 @@
 :root {
     --boardSize: 80px;
-    --p1-color: rgb(255, 60, 60);
-    --p2-color: rgb(20, 209, 223);
+    --primary-blue: #134686;
+    --primary-red: #ED3F27;
+    --primary-yellow: #FEB21A;
+    --primary-pale: #FDF4E3; 
     --cross-color: var(--p1-color);
     --circle-color: var(--p2-color);
+    --fascinate-font: "Fascinate";
 }
 
 * {
@@ -15,11 +18,43 @@ body {
     min-height: 100vh;
     min-width: 100vw;
     display: flex;
+    justify-content: center;
+    background-color: var(--primary-pale);
+}
+
+.startScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px
+}
+
+.startScreen .playerContainers {
+    display: flex;
+    gap: 400px;
+    margin-top: 70px;
+}
+
+.startScreen .player {
+    width: 200px;
+    text-align: center;
+}
+
+.O-player {
+    
+}
+
+.startScreen h1 {
+    font-family: var(--fascinate-font), system-ui;
+    font-size: 2.9rem;
+}
+
+.gameDiv {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0px;
-    margin: 0px;
 }
 
 .playerNames {
