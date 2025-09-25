@@ -41,6 +41,10 @@ body {
     width: 200px;
     text-align: center;
 }
+.startScreen .player:hover {
+    background-color: rgb(233, 233, 233);
+}
+
 
 .startScreen .X-inputPlayer {
     border: 2px solid var(--primary-blue);
@@ -66,7 +70,8 @@ body {
     fill: var(--primary-blue);
 }
 
-.start, .playAgain {
+.start,
+.playAgain {
     width: 200px;
     align-self: center;
     border: 2px solid black;
@@ -74,8 +79,20 @@ body {
     padding: 10px 15px;
     font-size: 2rem;
     font-family: var(--barrio-font);
-    color: var(--primary-yellow)
+    color: var(--primary-yellow);
+    background-color: rgb(248, 248, 248);
 }
+
+.start:hover,
+.playAgain:hover {
+    background-color: rgb(175, 175, 175);
+}
+
+.start:active,
+.playAgain:active {
+    background-color: rgb(46, 46, 46);
+}
+
 
 .playAgain {
     width: 150px;
